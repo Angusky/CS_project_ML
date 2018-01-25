@@ -230,7 +230,6 @@ int KNNClassifier::prediction(MyData &t, vector<double> dis_vector) {
 			pre_class = dis_pair[i].first;
 		}
 	}
-
 	//set class weight
 	t.class_w = (double)maxfcount / (double)k;
 
