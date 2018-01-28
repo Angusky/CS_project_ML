@@ -15,10 +15,18 @@ SemiTransD::SemiTransD(vector<MyData> &X, vector<MyData> &XT, int k) {
 
 	//set initial knn_label and class_weight
 	for (int i = 0; i < total_data.size(); i++) {
+		if (i < this->X.size()) {
+			this->X[i].knn_label = this->X[i].label;
+			this->X[i].class_w = 1;
+		}
+		else {
+			this->XT[i - this->X.size()].knn_label = this->XT[i - this->X.size()].label;
+			this->XT[i - this->X.size()].class_w = 1;
+		}
 		total_data[i].knn_label = total_data[i].label;
 		total_data[i].class_w = 1;
 	}
-
+	
 	preTrain();
 }
 void SemiTransD::setK(int k) {
@@ -104,37 +112,46 @@ double SemiTransD::calw(int a, int b, vector<vector<int>> &near_list, int round)
 }
 void SemiTransD::performTrans() {
 	double v = 0.1;
-	vector<MyData> train_data(total_data.begin(), total_data.begin() + X.size() + XT.size());
-	KNNClassifier knn(train_data, k);
+	int train_data_size = X.size() + XT.size();
+	
+	KNNClassifier first_knn(X, k);
 
 	vector<vector<int>> near_list;
 
 	for (int rc = 0; rc < dis_matrixs.size() - 1; rc++) {
 		double lambda, epsilon;
 		double r = 0.5;
-		double w;
+		double w;		
+
 		cout << "Round " << rc + 1 << " ." << endl;
 
 		calNearList(near_list,rc);
-		//get knn class weight and label for testing data
-		for (int i = train_data.size(); i < total_data.size(); i++) {
-			vector<double> dis_vector(dis_matrixs[rc][i].begin(), dis_matrixs[rc][i].begin() + train_data.size());
 
-			//change knn.prediction to bayes prediction
-			knn.bayesprediction(total_data[i], dis_vector);
-
-			//total_data[i].knn_label = knn.prediction(total_data[i], dis_vector);
-
-			//cout << "No." << total_data[i].num << " classify as " << total_data[i].knn_label << endl;
+		if (rc == 0) {
+			//get knn class weight and label for testing data
+			for (int i = train_data_size; i < total_data.size(); i++) {
+				vector<double> dis_vector(dis_matrixs[rc][i].begin(), dis_matrixs[rc][i].begin() + X.size());
+				total_data[i].knn_label = first_knn.prediction(total_data[i], dis_vector);
+			}
 		}
-		//set knn label for XT
-		for (int i = X.size(); i < train_data.size(); i++) {
-			total_data[i].knn_label = knn_results[rc][i - X.size()];
+		else {
+			//set knn label for XT
+			for (int i = X.size(); i < train_data_size; i++) {
+				total_data[i].knn_label = knn_results[rc][i - X.size()];
+			}
+			vector<MyData> train_data(total_data.begin(), total_data.begin() + X.size() + XT.size());
+			KNNClassifier knn(train_data, k);
+			//get knn class weight and label for testing data
+			for (int i = train_data.size(); i < total_data.size(); i++) {
+				vector<double> dis_vector(dis_matrixs[rc][i].begin(), dis_matrixs[rc][i].begin() + train_data.size());
+				total_data[i].knn_label = knn.prediction(total_data[i], dis_vector);
+			}
 		}
+
 		//for each pair, calculate new dis
 		for (int i = 0; i < total_data.size(); i++) {
 			for (int j = i + 1; j < total_data.size(); j++) {
-				if (i < train_data.size() && j < train_data.size()) {
+				if (i < train_data_size && j < train_data_size) {
 					continue;
 				}
 				double f = 1;

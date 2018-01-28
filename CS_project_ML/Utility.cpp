@@ -4,6 +4,15 @@ bool mycomp(pair<int, double> a, pair<int, double> b) {
 	return a.second < b.second;
 }
 
+bool mycomp2(pair<int, double> a, pair<int, double> b) {
+	return a.first < b.first;
+}
+
+bool mycompindex(MyData a, MyData b) {
+	return a.num < b.num;
+}
+
+
 string getPrefix(string dirname) {
 	int found;
 	found = dirname.find_last_of("\\");
@@ -71,20 +80,20 @@ void extractData(vector<MyData> &X, vector<MyData> &XT, vector<MyData> &T, strin
 			in >> temp >> comma;
 			temp_data.features.push_back(temp);
 		}
-		in >> temp_data.label;
+		in >> temp_data.real_label;
 		if (fold_data == -1) {
 			temp_data.is_train = false;
+			temp_data.label = -1;			
 			T.push_back(temp_data);
 		}
 		else if(fold_data == -2){
 			temp_data.is_train = false;
+			temp_data.label = -2;
 			XT.push_back(temp_data);
 		}
 		else {
 			temp_data.is_train = true;
-      //for knnbayes
-			temp_data.class_w_table.push_back(pair<int, double>(temp_data.label, 1));
-
+			temp_data.label = temp_data.real_label;
 			X.push_back(temp_data);
 		}
 	}
@@ -94,7 +103,7 @@ int checkResult(vector<int> &result, vector<MyData> &T) {
 	int vsize = result.size();
 	int ans = 0;
 	for (int i = 0; i < vsize; i++) {
-		if (result[i] != T[i].label) ans++;
+		if (result[i] != T[i].real_label) ans++;
 	}
 	return ans;
 }
@@ -151,12 +160,43 @@ void printDismatrix(vector<vector<double>> &dis_matrix) {
 	ofstream out("out.txt");
 	for (int i = 0; i < dis_matrix.size(); i++) {
 		for (int j = 0; j < dis_matrix[i].size(); j++) {
-			out <<left<<fixed<<setprecision(6)<<setw(9)<< dis_matrix[i][j];
+			out << left << fixed << setprecision(18) << setw(21) << dis_matrix[i][j];
 		}
 		out << endl;
 	}
 }
+void printDismatrix(vector<vector<double>> &dis_matrix, ofstream &out) {
+	for (int i = 0; i < dis_matrix.size(); i++) {
+		for (int j = 0; j < dis_matrix[i].size(); j++) {
+			out << fixed << setprecision(18) << setw(21) << dis_matrix[i][j];
+		}
+		out << endl;
+	}
+}
+void printTestDis(vector<vector<vector<double>>> dis_matrixs, int num, const vector<MyData> &total_data) {
+	string title = "testing_dis" + to_string(num) + ".txt";
+	ofstream out(title);
+	for (int i = 0; i < dis_matrixs.size(); i++)
+	{
+		for (int j = 0; j < dis_matrixs[i].size(); j++) {
+			if(total_data[j].label!=-1)
+				out << fixed << setprecision(18) << setw(21) << dis_matrixs[i][num][j];
+		}
+		out << endl;
+	}
 
+}
+/*void printTestDis(vector<vector<vector<double>>> dis_matrixs,int num , const vector<MyData> &total_data, ofstream &out) {
+	for (int i = 0; i < dis_matrixs.size(); i++)
+	{
+		for (int j = 0; j < dis_matrixs[i].size(); j++) {
+			if (total_data[j].label != -1)
+				out << fixed << setprecision(18) << setw(21) << dis_matrixs[i][num][j];
+		}
+		out << endl;
+	}
+	
+}*/
 void indexSortedMatrix(vector<MyData> &total_data, vector<vector<double>> &dis_matrix, vector<vector<double>> &new_dis) {
 	new_dis = dis_matrix;
 	for (int j = 0; j < dis_matrix.size(); j++) {
@@ -177,4 +217,30 @@ void indexSortedMatrix(vector<MyData> &total_data, vector<vector<double>> &dis_m
 			new_dis[j][k] = dis_matrix[indexj][indexk];
 		}
 	}
+}
+
+void indexSortedAllMatrix(vector<MyData>& total_data, vector<vector<vector<double>>>& dis_matrixs, vector<vector<vector<double>>>& new_diss)
+{
+	new_diss = dis_matrixs;
+	for (int i=0; i < dis_matrixs.size(); i++) {
+		for (int j = 0; j < dis_matrixs[i].size(); j++) {
+			for (int k = 0; k < dis_matrixs[i].size(); k++) {
+				int indexj, indexk;
+				for (int a = 0; a < total_data.size(); a++) {
+					if (total_data[a].num == j) {
+						indexj = a;
+						break;
+					}
+				}
+				for (int a = 0; a < total_data.size(); a++) {
+					if (total_data[a].num == k) {
+						indexk = a;
+						break;
+					}
+				}
+				new_diss[i][j][k] = dis_matrixs[i][indexj][indexk];
+			}
+		}
+	}
+
 }
