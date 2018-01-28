@@ -50,7 +50,6 @@ void NonlinearSemi::preTrain() {
 		}
 		first_matrix.row(i) = Eigen::VectorXd::Map(&tmp_vector[0], tmp_vector.size());
 	}
-
 	//setup last matrix
 	Eigen::MatrixXd last_matrix(total_data.size() * 2, total_data.size());
 	for (int i = 0; i < total_data.size(); i++) {
@@ -92,11 +91,9 @@ void NonlinearSemi::preTrain() {
 	/*ofstream f0out("first_matrix.txt");
 	f0out << first_matrix;
 	f0out.close();
-
 	ofstream f1out("last_matrix.txt");
 	f1out << last_matrix;
 	f1out.close();
-
 	ofstream f2out("god_matrix.txt");
 	f2out << god_matrix;
 	f2out.close();*/

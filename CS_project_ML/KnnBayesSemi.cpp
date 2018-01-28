@@ -96,7 +96,6 @@ void KnnBayesSemi::performTrans() {
 			dis_vector.push_back(0);
 			total_data[i].knn_label = knn.bayesprediction(total_data[i], dis_vector);
 		}
-
 		//set knn label for XT
 		for (int i = X.size(); i < train_data_size; i++) {
 			total_data[i].class_w_table = knn_results[rc][i - X.size()];
@@ -133,7 +132,6 @@ void KnnBayesSemi::performTrans() {
 			}
 		}
 		
-
 	}*/
 	/*
 	//print dismatrix		
