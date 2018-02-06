@@ -20,6 +20,7 @@ public:
 	int prediction(MyData &t, vector<double> dis_vector);
 	int adaptive_prediction(MyData &t, vector<double> dis_vector);
 	int bayesprediction(MyData &t, vector<double> dis_vector);
+	int bayesprediction_order(MyData &t, vector<double> dis_vector);
 	vector<int> prediction(vector<MyData> &T);
 	void setK(int k);
 };

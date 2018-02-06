@@ -1,5 +1,6 @@
 #include<iostream>
 #include"KnnBayesSemi.h"
+#include"KnnBayesOrderSemi.h"
 #include"NonlinearSemi.h"
 #include"Utility.h"
 #include"MyData.h"
@@ -9,9 +10,9 @@ int main() {
 	//---user define params---
 	ofstream afineout("nonlinear.txt");
 	ofstream inverseout("inverse.txt");
-	string dirname = "C:\\Users\\Hubert\\Desktop\\CS_project\\testData2\\d1_s.data";
+	string dirname = "D:\\Desk\\Junior\\CS_project\\testData2\\cleveland_s.data";
 	//string dirname = "C:\\Users\\steven954211\\Source\\Repos\\testData2\\d1_s.data";
-	string labeldir = "C:\\Users\\Hubert\\Desktop\\CS_project\\testData2\\d1_s\\label";
+	string labeldir = "D:\\Desk\\Junior\\CS_project\\testData2\\cleveland_s\\label";
 	//string labelname ="C:\\Users\\steven954211\\Source\\Repos\\testData2\\d1_s\\label01.txt";
 	int k = 1;
 	int fold_num = 50;
@@ -34,7 +35,13 @@ int main() {
 		//extractData(X, T, dirname, i);
 
 		//SemiTransD
-		KnnBayesSemi stransd(X, XT, k);
+		/*KnnBayesSemi stransd(X, XT, k);
+		stransd.setT(T);
+		stransd.performTrans();
+		inverseout << stransd.getScore() << endl;*/
+
+		//OrderSemiTransD
+		KnnBayesOrderSemi stransd(X, XT, k);
 		stransd.setT(T);
 		stransd.performTrans();
 		inverseout << stransd.getScore() << endl;

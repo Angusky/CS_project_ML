@@ -30,7 +30,7 @@ KnnBayesOrderSemi::KnnBayesOrderSemi(vector<MyData> &X, vector<MyData> &XT, int 
 
 void KnnBayesOrderSemi::preTrain() {
 	//cout << "Pre-training..." << endl;
-	KnnBayesTransD transd(X, XT, k);
+	KnnBayesOrderTransD transd(X, XT, k);
 	transd.performTrans(dis_matrixs, knn_results);
 	for (int i = X.size(); i < X.size() + XT.size(); i++) {
 		total_data[i].real_label = knn_results[i - X.size()];
