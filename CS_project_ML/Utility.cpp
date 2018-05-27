@@ -1,17 +1,29 @@
 #include"Utility.h"
+#include <windows.h>
+#include <sstream>
 
 bool mycomp(pair<int, double> a, pair<int, double> b) {
 	return a.second < b.second;
 }
 
-bool mycomp2(pair<int, double> a, pair<int, double> b) {
+bool mycomp_label(pair<int, double> a, pair<int, double> b) {
 	return a.first < b.first;
 }
 
-bool mycompindex(MyData a, MyData b) {
+bool mycomp_index(MyData a, MyData b) {
 	return a.num < b.num;
 }
 
+bool compfunc_mydata(pair<MyData, double> a, pair<MyData, double> b) {
+	return a.second < b.second;
+}
+bool compfunc_dispair(pair<vector<pair<int, double>>, double> a, pair<vector<pair<int, double>>, double> b)
+{
+	return a.second < b.second;
+}
+bool compfunc_descend(pair<int, double> a, pair<int, double> b) {
+	return a.second > b.second;
+}
 
 string getPrefix(string dirname) {
 	int found;
@@ -99,6 +111,87 @@ void extractData(vector<MyData> &X, vector<MyData> &XT, vector<MyData> &T, strin
 	}
 }
 
+void extractData(vector<MyData> &X, vector<MyData> &XT, vector<MyData> &T, string labelname) {
+
+	//start reading from .data
+	ifstream infile(labelname);
+	cout << "reading from " << labelname << endl;
+
+	int data_num, feature_num;
+	int fold_data;
+	char comma;
+	string in;
+	stringstream ss;
+	getline(infile,in);
+	ss << in;
+	ss >> data_num >> comma >> feature_num;
+	for (int i = 0; i < data_num; i++) {
+		getline(infile, in);
+		stringstream ss(in);
+		MyData temp_data;
+		ss >> temp_data.num >> comma;
+		for (int j = 0; j < feature_num; j++) {
+			double temp;
+			ss >> temp;
+			if (ss.peek() == ',')
+			{
+				ss.ignore();
+			}
+			temp_data.features.push_back(temp);
+		}
+		ss >> temp_data.real_label;
+		if (ss.peek() == ',')
+		{
+			ss.ignore();
+		}
+		ss >> fold_data;
+		if (fold_data == -1) {
+			temp_data.is_train = false;
+			temp_data.label = -1;
+			T.push_back(temp_data);
+		}
+		else if (fold_data == -2) {
+			temp_data.is_train = false;
+			temp_data.label = -2;
+			XT.push_back(temp_data);
+		}
+		else {
+			temp_data.is_train = true;
+			temp_data.label = temp_data.real_label;
+			X.push_back(temp_data);
+		}
+	}
+	/*cout << data_num << ", " << feature_num << endl;
+	for (int i = 0; i < XT.size(); i++)
+	{
+		cout << XT[i].num << ", ";
+		for (int j = 0; j < XT[i].features.size(); j++)
+		{
+			cout << XT[i].features[j] << ", ";
+		}
+		cout << XT[i].label << endl;
+	}
+	for (int i = 0; i < T.size(); i++)
+	{
+		cout << T[i].num << ", ";
+		for (int j = 0; j < T[i].features.size(); j++)
+		{
+			cout << T[i].features[j] << ", ";
+		}
+		cout << T[i].label << endl;
+	}
+	for (int i = 0; i < X.size(); i++)
+	{
+		cout << X[i].num << ", ";
+		for (int j = 0; j < X[i].features.size(); j++)
+		{
+			cout << X[i].features[j] << ", ";
+		}
+		cout << X[i].label << endl;
+	}
+	system("pause");*/
+}
+
 int checkResult(vector<int> &result, vector<MyData> &T) {
 	int vsize = result.size();
 	int ans = 0;
@@ -165,6 +258,13 @@ void printDismatrix(vector<vector<double>> &dis_matrix) {
 		out << endl;
 	}
 }
+void CreateFolder(const string  path)
+{
+	if (!CreateDirectoryA(path.c_str(), NULL))
+	{
+		return;
+	}
+}
 void printDismatrix(vector<vector<double>> &dis_matrix, ofstream &out) {
 	for (int i = 0; i < dis_matrix.size(); i++) {
 		for (int j = 0; j < dis_matrix[i].size(); j++) {
@@ -185,6 +285,72 @@ void printTestDis(vector<vector<vector<double>>> dis_matrixs, int num, const vec
 		out << endl;
 	}
 
+}
+void printlabel(vector<MyData>& total_data, ofstream &outknn, ofstream &outreal)
+{
+	int j = -1;
+	int k = 0;
+	while (k<total_data.size())
+	{
+		
+		for (int i = 0; i < total_data.size(); i++)
+		{	if(total_data[i].num==j+1)
+			{
+				/*if (total_data[i].real_label != total_data[i].knn_label)
+					out << 1 << ' ';
+				else
+					out << 0 << ' ';
+				*/
+				outreal << total_data[i].real_label << ' ';
+				outknn << total_data[i].knn_label << ' ';
+				j++;
+				k++;
+				//cout << total_data[i].num << ' ';
+				break;
+			}
+			if (i == total_data.size() - 1)
+			{
+				outknn << -1 << ' ';
+				j++;
+			}
+		}
+
+		
+	}
+}
+void printlabel(vector<MyData>& total_data, ofstream &outknn, ofstream &outreal, vector<int> results)
+{
+	int j = -1;
+	int k = 0;
+	int count = 0;
+	while (k<total_data.size())
+	{
+
+		for (int i = 0; i < total_data.size(); i++)
+		{
+			if (total_data[i].num == j + 1)
+			{
+				/*if (total_data[i].real_label != total_data[i].knn_label)
+				out << 1 << ' ';
+				else
+				out << 0 << ' ';
+				*/
+				outreal << total_data[i].real_label << ' ';
+				if(total_data[i].knn_label!=-1)
+					outknn << total_data[i].knn_label << ' ';
+				else
+					outknn << results[count++] << ' ';
+				j++;
+				k++;
+				//cout << total_data[i].num << ' ';
+				break;
+			}
+			if (i == total_data.size() - 1)
+				j++;
+		}
+
+
+	}
 }
 /*void printTestDis(vector<vector<vector<double>>> dis_matrixs,int num , const vector<MyData> &total_data, ofstream &out) {
 	for (int i = 0; i < dis_matrixs.size(); i++)

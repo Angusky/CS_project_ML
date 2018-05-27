@@ -20,6 +20,7 @@ TransD::TransD(vector<MyData> &X, vector<MyData> &T, int k){
 	}
 }
 
+
 void TransD::setK(int k) {
 	this->k = k;
 }

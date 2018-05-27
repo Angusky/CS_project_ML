@@ -35,7 +35,6 @@ void NonlinearSemi::preTrain() {
 	for (int i = X.size(); i < X.size() + XT.size(); i++) {
 		total_data[i].real_label = knn_results[i - X.size()];
 	}
-
 	/*
 	//setup first matrix
 	Eigen::MatrixXd first_matrix(total_data.size() * 2, total_data.size());
@@ -50,6 +49,7 @@ void NonlinearSemi::preTrain() {
 		}
 		first_matrix.row(i) = Eigen::VectorXd::Map(&tmp_vector[0], tmp_vector.size());
 	}
+
 	//setup last matrix
 	Eigen::MatrixXd last_matrix(total_data.size() * 2, total_data.size());
 	for (int i = 0; i < total_data.size(); i++) {
@@ -62,8 +62,7 @@ void NonlinearSemi::preTrain() {
 			tmp_vector[j] = tmp_vector[j] * tmp_vector[j];
 		}
 		last_matrix.row(i) = Eigen::VectorXd::Map(&tmp_vector[0], tmp_vector.size());
-	}
-	*/
+	}*/
 
 	//setup first matrix
 	Eigen::MatrixXd first_matrix(total_data.size() + 1, total_data.size());
@@ -91,9 +90,11 @@ void NonlinearSemi::preTrain() {
 	/*ofstream f0out("first_matrix.txt");
 	f0out << first_matrix;
 	f0out.close();
+
 	ofstream f1out("last_matrix.txt");
 	f1out << last_matrix;
 	f1out.close();
+
 	ofstream f2out("god_matrix.txt");
 	f2out << god_matrix;
 	f2out.close();*/

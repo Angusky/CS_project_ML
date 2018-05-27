@@ -48,10 +48,7 @@
     <ClCompile Include="NonlinearSemi.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
-    <ClCompile Include="KnnBayesOrderSemi.cpp">
-      <Filter>原始程式檔</Filter>
-    </ClCompile>
-    <ClCompile Include="KnnBayesOrderTransD.cpp">
+    <ClCompile Include="ClusterSemi.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
   </ItemGroup>
@@ -86,10 +83,7 @@
     <ClInclude Include="NonlinearSemi.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="KnnBayesOrderSemi.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
-    <ClInclude Include="KnnBayesOrderTransD.h">
+    <ClInclude Include="ClusterSemi.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>
